@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import catNFT from '../assets/cat_nft.gif'
 import monkeyNFT1 from '../assets/monkey_nft.gif'
 import monkeyNFT2 from '../assets/monkey_nft_2.gif'
-
+import Loader from '../layout/Loader'
 const Card: React.FC = () => {
 
     interface nftDatasInterface {
@@ -52,9 +52,9 @@ const Card: React.FC = () => {
                                     <p className="card-text">
                                         {element.description}
                                     </p>
-                                    <a href="#" className="btn btn-primary">
+                                    <button className="btn btn-primary">
                                         Support US!!!
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
