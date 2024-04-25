@@ -8,15 +8,37 @@ const Admin: React.FC = () => {
     const [walletAddress, setWallet] = useState()
 
     const WithDrawFund = async () => {
+        try {
 
-        const wallet = await window.ethereum.request({
-            method: "eth_requestAccounts",
-        });
-        console.log("wallet", wallet);
-        setWallet(wallet[0])
+            const wallet = await window.ethereum.request({
+                method: "eth_requestAccounts",
+            });
+            console.log("wallet", wallet);
+            setWallet(wallet[0])
 
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            console.log(signer);
+            console.log(CONTRACTS);
+
+            const contract = new ethers.Contract(
+                CONTRACTS.CROWD_FUND.ADDRESS,
+                CONTRACTS.CROWD_FUND.ABI,
+                signer
+            );
+
+            const tx = await contract.withdraw(wallet[0]);
+            await tx.wait(1);
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    const VoteToWithdraw = async (vote: boolean) => {
+        console.log(vote);
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
+        const signer = await provider.getSigner();
         console.log(signer);
         console.log(CONTRACTS);
 
@@ -26,10 +48,10 @@ const Admin: React.FC = () => {
             signer
         );
 
-        const tx = await contract.withdraw(wallet[0]);
-        await tx.wait(1)
+        const voted = await contract.vote(true);
+        await voted.wait(1)
+        console.log(voted);
     }
-
     return (
         <>
             <div className="d-flex align-items-center justify-content-center vh-100">
@@ -43,14 +65,11 @@ const Admin: React.FC = () => {
 
                     <div className="row mb-3">
                         <div className="col-sm-9 offset-sm-2">
-                            {/* <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="gridCheck1" />
-                                <label className="form-check-label" htmlFor="gridCheck1">
-                                    Example checkbox
-                                </label>
-                            </div> */}
+                            <label>Athorize other Owner to Withdraw</label>
+                            <button type="button" className="btn btn-primary mx-2 mb-2" onClick={() => VoteToWithdraw(true)}>Yes</button>
+                            <button type="button" className="btn btn-primary mx-2 mb-2" onClick={() => VoteToWithdraw(false)}>No</button>
                         </div>
-                        <button className="btn btn-primary" onClick={WithDrawFund}>Withdraw your fund</button>
+                        <button type="button" className="btn btn-primary" onClick={WithDrawFund}>Withdraw your fund</button>
                     </div>
                 </form>
             </div>
